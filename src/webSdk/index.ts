@@ -88,7 +88,7 @@ class WebSdk {
       this.deferredTransact.deferral.reject('Trying to login')
       this.deferredTransact = null
     }
-    this.childWindow = this.openWindow('https://localhost:5173/dappAuth');
+    this.childWindow = this.openWindow('https://dfstest.dfs.land/dappAuth');
     this.deferredLogin = new Deferred();
     try {
       this.curUserInfo = await this.deferredLogin.promise
@@ -130,7 +130,7 @@ class WebSdk {
       this.deferredLogin.reject('Trying to transact')
       this.deferredLogin = null
     }
-    this.childWindow = this.openWindow('https://localhost:5173/dappAuth/transact');
+    this.childWindow = this.openWindow('https://dfstest.dfs.land/dappAuth/transact');
     this.deferredTransact = {
       deferral: new Deferred(),
       actions,

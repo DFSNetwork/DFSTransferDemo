@@ -66,7 +66,11 @@ const formData = reactive({
 });
 const userInfo = ref<Identity | null>(null);
 const handleLogin = async () => {
-  userInfo.value = await webSdk.login();
+  try {
+    userInfo.value = await webSdk.login();
+  } catch (error) {
+    alert(error);
+  }
 };
 const handleTransact = async () => {
   if (!userInfo.value) {
@@ -91,8 +95,13 @@ const handleTransact = async () => {
       },
     },
   ];
-  const userinfo = await webSdk.transact(actions);
-  console.log(userinfo);
+  try {
+    const userinfo = await webSdk.transact(actions);
+    console.log(userinfo);
+    alert('transfer success!');
+  } catch (error) {
+    alert(JSON.stringify(error));
+  }
 };
 const handleLogout = async () => {
   userInfo.value = null;
