@@ -47,7 +47,7 @@
           autocomplete="off"
         />
       </div>
-      <button class="btn" @click="handleTransact()">Transfer</button>
+      <van-button type="primary" @click="handleTransact()">Transfer</van-button>
     </div>
   </div>
 </template>
@@ -55,6 +55,7 @@
 <script setup lang="ts">
 import { Identity } from '@/types';
 import WebSdk from '@/webSdk';
+import { showFailToast, showSuccessToast } from 'vant';
 let webSdk = new WebSdk(
   'DFS Transfer Demo',
   'https://dfs.land/assets/icons/180x180.png'
@@ -69,12 +70,13 @@ const handleLogin = async () => {
   try {
     userInfo.value = await webSdk.login();
   } catch (error) {
-    alert(error);
+    console.error(error);
+    showFailToast('fail');
   }
 };
 const handleTransact = async () => {
   if (!userInfo.value) {
-    alert('Please login first!');
+    showFailToast('Please login first!');
     return;
   }
   const actions = [
@@ -98,9 +100,10 @@ const handleTransact = async () => {
   try {
     const userinfo = await webSdk.transact(actions);
     console.log(userinfo);
-    alert('transfer success!');
+    showSuccessToast('transfer success!');
   } catch (error) {
-    alert(JSON.stringify(error));
+    console.error(error);
+    showFailToast(JSON.stringify(error));
   }
 };
 const handleLogout = async () => {
