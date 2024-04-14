@@ -16,7 +16,7 @@ class Deferred {
 const OPEN_SETTINGS = 'menubar=1,resizable=1,width=400,height=800';
 let _childWindow: Window | null = null;
 let linkUrl = 'https://dfstest.dfs.land';
-linkUrl = 'https://localhost:5173';
+// linkUrl = 'https://localhost:5173';
 
 export class WebSdk {
   curUserInfo: Identity | null = null;
