@@ -1,17 +1,6 @@
 <template>
   <div>
-    <div class="navs">
-      <img src="https://dfs.land/assets/icons/180x180.png" class="logo" />
-      <div>
-        <button class="login" v-if="!userInfo" @click="handleLogin">
-          Login
-        </button>
-        <div v-else>
-          {{ userInfo.name }}
-          <button @click="handleLogout" class="logout">Logout</button>
-        </div>
-      </div>
-    </div>
+    <Navs />
     <div class="transfer">
       <div class="item">
         <div class="label">From</div>
@@ -53,27 +42,18 @@
 </template>
 
 <script setup lang="ts">
+import Navs from '@/components/Navs.vue';
+import useAppStore from '@/store/modules/app';
 import { Identity } from '@/types';
-import WebSdk from '@/webSdk';
+import DFSWallet from '@/wallet';
 import { showFailToast, showSuccessToast } from 'vant';
-let webSdk = new WebSdk(
-  'DFS Transfer Demo',
-  'https://dfs.land/assets/icons/180x180.png'
-);
 const formData = reactive({
   to: '',
   quantity: '',
   memo: '',
 });
-const userInfo = ref<Identity | null>(null);
-const handleLogin = async () => {
-  try {
-    userInfo.value = await webSdk.login();
-  } catch (error) {
-    console.error(error);
-    showFailToast('fail');
-  }
-};
+const appStore = useAppStore();
+const userInfo = computed<Identity | null>(() => appStore.user);
 const handleTransact = async () => {
   if (!userInfo.value) {
     showFailToast('Please login first!');
@@ -98,16 +78,15 @@ const handleTransact = async () => {
     },
   ];
   try {
-    const userinfo = await webSdk.transact(actions);
+    const userinfo = await DFSWallet.transact(actions);
     console.log(userinfo);
     showSuccessToast('transfer success!');
   } catch (error) {
     console.error(error);
-    showFailToast(JSON.stringify(error));
+    showFailToast(
+      error instanceof Error ? error.message : JSON.stringify(error)
+    );
   }
-};
-const handleLogout = async () => {
-  userInfo.value = null;
 };
 const handleBlur = () => {
   if (!Number(formData.quantity || 0)) {
@@ -118,7 +97,7 @@ const handleBlur = () => {
 };
 </script>
 
-<style scoped>
+<style scoped lang="scss">
 .navs {
   display: flex;
   align-items: center;

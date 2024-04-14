@@ -13,11 +13,12 @@ class Deferred {
   }
 }
 
-
-const OPEN_SETTINGS = 'menubar=1,resizable=1,width=400,height=600';
+const OPEN_SETTINGS = 'menubar=1,resizable=1,width=400,height=800';
 let _childWindow: Window | null = null;
+let linkUrl = 'https://dfstest.dfs.land';
+linkUrl = 'https://localhost:5173';
 
-class WebSdk {
+export class WebSdk {
   curUserInfo: Identity | null = null;
   deferredTransact: {
     deferral: Deferred
@@ -28,17 +29,20 @@ class WebSdk {
   appName: string = '';
   logoUrl: string = '';
 
-  constructor(appName: string, logoUrl: string) {
-    this.appName = appName;
-    this.logoUrl = logoUrl;
-    window.addEventListener('message', (event) => this.dealMsg(event), false);
+  constructor() {
     setInterval(() => this.closeWindow(), 500);
+    window.addEventListener('message', this._listenFunc, false);
   }
   public get childWindow() {
     return _childWindow;
   }
   public set childWindow(value: Window | null) {
     _childWindow = value;
+  }
+
+  init(appName: string, logoUrl: string) {
+    this.appName = appName;
+    this.logoUrl = logoUrl;
   }
   dealMsg(event: MessageEvent) {
     const data = event.data;
@@ -88,16 +92,20 @@ class WebSdk {
       this.deferredTransact.deferral.reject('Trying to login')
       this.deferredTransact = null
     }
-    this.childWindow = this.openWindow('https://dfstest.dfs.land/dappAuth');
+    this.childWindow = this.openWindow(`${linkUrl}/dappAuth`);
     this.deferredLogin = new Deferred();
     try {
       this.curUserInfo = await this.deferredLogin.promise
       this.deferredLogin = null;
+      console.log(this.curUserInfo)
       return this.curUserInfo
     } catch (e) {
       console.error(e)
       throw e
     }
+  }
+  logout() {
+    this.curUserInfo = null;
   }
 
   dealTransferMsg(msgData: any) {
@@ -130,7 +138,7 @@ class WebSdk {
       this.deferredLogin.reject('Trying to transact')
       this.deferredLogin = null
     }
-    this.childWindow = this.openWindow('https://dfstest.dfs.land/dappAuth/transact');
+    this.childWindow = this.openWindow(`${linkUrl}/dappAuth/transact`);
     this.deferredTransact = {
       deferral: new Deferred(),
       actions,
@@ -184,6 +192,10 @@ class WebSdk {
     }
     return window.open(url, '_blank', OPEN_SETTINGS);
   }
-}
 
-export default WebSdk
+  private _listenFunc = (event: MessageEvent) => {
+    this.dealMsg(event);
+  }
+}
+const webSdk = new WebSdk()
+export default webSdk

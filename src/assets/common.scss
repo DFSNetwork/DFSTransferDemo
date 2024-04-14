@@ -1,0 +1,68 @@
+$namespace: 'dfs' !default;
+$block-sel: '-' !default;
+$elem-sel: '__' !default;
+$mod-sel: '--' !default;
+
+@mixin b($block) {
+  $B: #{$namespace + $block-sel + $block};
+  .#{$B} {
+    @content;
+  }
+}
+@mixin e($elem) {
+  $selector: &;
+  @at-root {
+    #{$selector + $elem-sel + $elem} {
+      @content;
+    }
+  }
+}@mixin m($mod) {
+  $selector: &;
+
+  @at-root {
+    #{$selector + $mod-sel + $mod} {
+      @content;
+    }
+  }
+}
+
+// css
+@mixin flexc() {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+@mixin flexb() {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+@mixin flexs() {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+}
+
+@mixin flexe() {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+}
+
+@mixin flextop() {
+  display: flex;
+  align-items: flex-start;
+}
+
+@mixin flexbottom() {
+  display: flex;
+  align-items: flex-end;
+}
+
+@mixin grid($t, $gap: 20px) {
+  display: grid;
+  grid-template-columns: repeat($t, 1fr);
+  grid-gap: $gap;
+}
