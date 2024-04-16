@@ -16,7 +16,7 @@ class Deferred {
 const OPEN_SETTINGS = 'menubar=1,resizable=1,width=400,height=800';
 let _childWindow: Window | null = null;
 let linkUrl = 'https://dfstest.dfs.land';
-// linkUrl = 'https://localhost:5173';
+linkUrl = 'https://localhost:5173';
 
 export class WebSdk {
   curUserInfo: Identity | null = null;
@@ -31,7 +31,9 @@ export class WebSdk {
 
   constructor() {
     setInterval(() => this.closeWindow(), 500);
-    window.addEventListener('message', this._listenFunc, false);
+    window.addEventListener('message', (event: MessageEvent) => {
+      this.dealMsg(event);
+    }, false);
   }
   public get childWindow() {
     return _childWindow;
@@ -66,8 +68,9 @@ export class WebSdk {
   dealLoginMsg(msgData: any) {
     const { status, message } = msgData;
     if (status === 'error') {
-      this.closeWindow(true);
       this.deferredLogin!.reject(message);
+      this.deferredLogin = null;
+      this.closeWindow(true);
       return;
     }
     if (status === 'ready') {
@@ -81,8 +84,8 @@ export class WebSdk {
       return
     }
     if (status === 'success') {
-      this.deferredLogin!.resolve(msgData.data);
-      this.closeWindow(true);
+      this.deferredLogin?.resolve(msgData.data);
+      // this.closeWindow(true);
     }
   }
 
@@ -98,6 +101,7 @@ export class WebSdk {
       this.curUserInfo = await this.deferredLogin.promise
       this.deferredLogin = null;
       console.log(this.curUserInfo)
+      this.closeWindow(true);
       return this.curUserInfo
     } catch (e) {
       console.error(e)
@@ -111,8 +115,9 @@ export class WebSdk {
   dealTransferMsg(msgData: any) {
     const { status, message } = msgData;
     if (status === 'error') {
-      this.closeWindow(true);
       this.deferredTransact!.deferral.reject(message);
+      this.deferredTransact = null;
+      this.closeWindow(true);
       return;
     }
     if (status === 'ready') {
@@ -128,8 +133,7 @@ export class WebSdk {
       return
     }
     if (status === 'success') {
-      this.deferredTransact!.deferral.resolve(msgData.data);
-      this.closeWindow(true);
+      this.deferredTransact?.deferral.resolve(msgData.data);
     }
   }
   async transact(actions: Array<any>, options: any = {}) {
@@ -147,6 +151,7 @@ export class WebSdk {
     try {
       const result = await this.deferredTransact.deferral.promise
       this.deferredTransact = null;
+      this.closeWindow(true);
       return result
     } catch (e) {
       console.error(e)
@@ -181,7 +186,18 @@ export class WebSdk {
       }
 
       if (force || this.childWindow.closed) {
+        console.log('force = ', force, 'this.childWindow.closed = ', this.childWindow?.closed);
         this.childWindow = null;
+
+        if (this.deferredLogin) {
+          this.deferredLogin.reject('Close')
+          this.deferredLogin = null
+        }
+        if (this.deferredTransact) {
+          this.deferredTransact.deferral.reject('Close')
+          this.deferredTransact = null
+
+        }
       }
     }
   }
@@ -191,10 +207,6 @@ export class WebSdk {
       this.childWindow = null;
     }
     return window.open(url, '_blank', OPEN_SETTINGS);
-  }
-
-  private _listenFunc = (event: MessageEvent) => {
-    this.dealMsg(event);
   }
 }
 const webSdk = new WebSdk()

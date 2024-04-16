@@ -1,13 +1,13 @@
 <template>
   <div class="wallets">
-    <div class="title">Connect Wallet</div>
+    <div class="title">Select Login Method</div>
     <div class="item" @click="handleChoose(WalletType.WEB)">
-      <img src="https://dfs.land/assets/icons/180x180.png" class="icon" />
-      <div class="label">DFS Web Wallet</div>
+      <img src="@/assets/svg/fingerprint.svg" class="icon" />
+      <div class="label">Passkey</div>
     </div>
     <div class="item" @click="handleChoose(WalletType.DFSWALLET)">
-      <img src="https://dfs.land/assets/icons/180x180.png" class="icon" />
-      <div class="label">Chrome DFS Wallet</div>
+      <img src="@/assets/img/DFS.png" class="icon" />
+      <div class="label">DFS Wallet</div>
     </div>
   </div>
 </template>

@@ -49,11 +49,7 @@ const handleChoose = (walletType: WalletType) => {
 };
 const handleLogin = async (walletType: WalletType) => {
   try {
-    await DFSWallet.init({
-      walletType,
-      appName: 'DFS Tansfer Demo',
-      logo: 'https://dfs.land/assets/icons/180x180.png',
-    });
+    await DFSWallet.init(walletType);
     await DFSWallet.login();
   } catch (error) {
     console.error(error);

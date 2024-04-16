@@ -2,7 +2,34 @@
   <router-view></router-view>
 </template>
 
-<script setup lang="ts"></script>
+<script setup lang="ts">
+import useAppStore from './store/modules/app';
+import DFSWallet from '@/wallet';
+import { WalletType } from './utils/constant';
+
+const appStore = useAppStore();
+const user = computed(() => appStore.user);
+
+// set App info
+DFSWallet.setAppInfo(
+  'DFS Tansfer Demo',
+  'https://dfs.land/assets/icons/180x180.png'
+);
+
+watch(
+  user,
+  () => {
+    if (user.value?.name) {
+      const walletType = (localStorage.getItem('walletType') ||
+        WalletType.WEB) as WalletType;
+      DFSWallet.init(walletType);
+    }
+  },
+  {
+    immediate: true,
+  }
+);
+</script>
 
 <style scoped>
 .logo {

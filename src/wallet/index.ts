@@ -6,22 +6,21 @@ import dfsWallet, { DfsWallet } from './dfsSdk';
 
 class Wallet {
   webSdk: WebSdk | DfsWallet | null = null;
-  async init({
-    walletType = WalletType.WEB,
-    appName = '',
-    logo = ''
-  }: {
-    walletType: WalletType,
-    appName: string,
-    logo: string
-  }) {
+  appName: string = '';
+  logo: string = '';
+  setAppInfo(appName: string, logo: string) {
+    this.appName = appName;
+    this.logo = logo;
+  }
+  async init(walletType: WalletType) {
+    localStorage.setItem('walletType', walletType);
     if (walletType === WalletType.WEB) {
-      webSdk.init(appName, logo);
+      webSdk.init(this.appName, this.logo);
       this.webSdk = webSdk;
       return
     }
     this.webSdk = dfsWallet;
-    await dfsWallet.init(appName, logo);
+    await dfsWallet.init(this.appName, this.logo);
   }
 
   async login() {
