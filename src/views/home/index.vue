@@ -1,6 +1,17 @@
 <template>
   <div>
     <Navs />
+
+    <div class="tip">
+      <div>
+        该dapp演示了一个dapp如何通过dfs插件钱包或passkey的方式登录，以及如何与dfs区块链进行交互。
+
+        <span class="toGithub" @click="handleToGithub">
+          参考代码<van-icon name="arrow" class="rightIcon"
+        /></span>
+      </div>
+    </div>
+
     <div class="transfer">
       <div class="item">
         <div class="label">From</div>
@@ -89,6 +100,10 @@ import {
   getCurrencBalance,
   getTableRows,
 } from '@/utils/common';
+
+const handleToGithub = () => {
+  window.open('https://github.com/DFSNetwork/DFS-Wallet-Demo', '_blank');
+};
 
 const formData = reactive({
   to: '',
@@ -273,6 +288,21 @@ const handleRegAccount = async () => {
 </script>
 
 <style scoped lang="scss">
+.tip {
+  padding: 10px;
+  border-radius: 5px;
+  border: 1px solid #ff9d00;
+  color: #ff9d00;
+  width: fit-content;
+  margin: 30px auto;
+  .toGithub {
+    color: #29d4b0;
+    cursor: pointer;
+    .rightIcon {
+      margin-left: 2px;
+    }
+  }
+}
 .transfer {
   max-width: 500px;
   text-align: left;
