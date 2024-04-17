@@ -246,6 +246,10 @@ const handleTransact = async () => {
     });
     console.log(userinfo);
     showSuccessToast('transfer success!');
+
+    setTimeout(() => {
+      handleGetGetBal();
+    }, 2000);
   } catch (error) {
     console.error(error);
     showFailToast(
