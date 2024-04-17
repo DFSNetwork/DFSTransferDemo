@@ -223,7 +223,7 @@ const handleTransact = async () => {
   }
   const actions = [
     {
-      account: 'eosio.token',
+      account: chooseToken.contract,
       name: 'transfer',
       authorization: [
         {
@@ -234,7 +234,7 @@ const handleTransact = async () => {
       data: {
         from: userInfo.value?.name,
         to: formData.to,
-        quantity: `${formData.quantity} DFS`,
+        quantity: `${formData.quantity} ${chooseToken.symbol}`,
         memo: formData.memo,
       },
     },
