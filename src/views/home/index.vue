@@ -257,7 +257,7 @@ const handleBlur = () => {
     formData.quantity = '';
     return;
   }
-  formData.quantity = Number(formData.quantity).toFixed(8);
+  formData.quantity = Number(formData.quantity).toFixed(chooseToken.decimal);
 };
 /** 12位账号校验规则 */
 const reg = /^[a-z1-5]{12}$/;
