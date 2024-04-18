@@ -243,7 +243,7 @@ const handleTransact = async () => {
   try {
     loading.value = true;
     const userinfo = await DFSWallet.transact(actions, {
-      // useFreeCpu: true,
+      useFreeCpu: true,
     });
     console.log(userinfo);
     showSuccessToast('transfer success!');
