@@ -3,6 +3,8 @@ import useAppStore from '@/store/modules/app';
 import { WalletType } from '@/utils/constant';
 import webSdk, { WebSdk } from '@/wallet/webSdk';
 import dfsWallet, { DfsWallet } from './dfsSdk';
+import { Transaction } from 'eosjs/dist/eosjs-api-interfaces';
+import { Action } from 'eosjs/dist/eosjs-serialize';
 
 class Wallet {
   webSdk: WebSdk | DfsWallet | null = null;
@@ -39,11 +41,12 @@ class Wallet {
     const appStore = useAppStore();
     appStore.setUser(null);
   }
-  transact(actions: Array<any>, options: any = {}) {
+  transact(transaction: Transaction | Action[], options: any = {}) {
     if (!this.webSdk) {
       throw new Error('Wallet not init');
     }
-    return this.webSdk.transact(actions, options);
+    let _t: Transaction = Array.isArray(transaction) ? { actions: transaction } : transaction;
+    return this.webSdk.transact(_t, options);
   }
 }
 

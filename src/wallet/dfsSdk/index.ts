@@ -1,5 +1,6 @@
 import useAppStore from "@/store/modules/app";
 import { Api, JsonRpc } from "eosjs";
+import { Transaction } from "eosjs/dist/eosjs-api-interfaces";
 
 
 const win = (window as any);
@@ -75,10 +76,10 @@ export class DfsWallet {
     };
   }
   async logout() { }
-  async transact(actions: Array<any>, opts: any = {}) {
+  async transact(transaction: Transaction, opts: any = {}) {
     try {
       let resp = await this.api?.transact(
-        { actions },
+        transaction,
         Object.assign(
           {
             blocksBehind: 3,

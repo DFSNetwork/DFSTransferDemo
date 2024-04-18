@@ -100,6 +100,7 @@ import {
   getCurrencBalance,
   getTableRows,
 } from '@/utils/common';
+import { Action } from 'eosjs/dist/eosjs-serialize';
 
 const handleToGithub = () => {
   window.open('https://github.com/DFSNetwork/DFS-Wallet-Demo', '_blank');
@@ -221,13 +222,13 @@ const handleTransact = async () => {
   if (!handelReg()) {
     return;
   }
-  const actions = [
+  const actions: Action[] = [
     {
       account: chooseToken.contract,
       name: 'transfer',
       authorization: [
         {
-          actor: userInfo.value?.name,
+          actor: userInfo.value?.name || '',
           permission: userInfo.value?.authority || 'active',
         },
       ],
@@ -242,7 +243,7 @@ const handleTransact = async () => {
   try {
     loading.value = true;
     const userinfo = await DFSWallet.transact(actions, {
-      useFreeCpu: true,
+      // useFreeCpu: true,
     });
     console.log(userinfo);
     showSuccessToast('transfer success!');

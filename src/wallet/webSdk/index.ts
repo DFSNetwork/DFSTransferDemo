@@ -1,4 +1,5 @@
 import { Identity } from "@/types";
+import { Transaction } from "eosjs/dist/eosjs-api-interfaces";
 
 class Deferred {
   promise: Promise<any>
@@ -22,7 +23,7 @@ export class WebSdk {
   curUserInfo: Identity | null = null;
   deferredTransact: {
     deferral: Deferred
-    actions: Array<any>
+    transaction: Transaction
     options: any
   } | null = null;
   deferredLogin: Deferred | null = null;
@@ -126,7 +127,7 @@ export class WebSdk {
         data: {
           appName: this.appName,
           logo: this.logoUrl,
-          actions: this.deferredTransact!.actions,
+          transaction: this.deferredTransact!.transaction,
           options: this.deferredTransact!.options
         },
       })
@@ -136,7 +137,7 @@ export class WebSdk {
       this.deferredTransact?.deferral.resolve(msgData.data);
     }
   }
-  async transact(actions: Array<any>, options: any = {}) {
+  async transact(transaction: Transaction, options: any = {}) {
     if (this.deferredLogin) {
       this.closeWindow(true)
       this.deferredLogin.reject('Trying to transact')
@@ -145,7 +146,7 @@ export class WebSdk {
     this.childWindow = this.openWindow(`${linkUrl}/dappAuth/transact`);
     this.deferredTransact = {
       deferral: new Deferred(),
-      actions,
+      transaction: transaction,
       options
     };
     try {
