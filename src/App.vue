@@ -5,7 +5,7 @@
 <script setup lang="ts">
 import useAppStore from './store/modules/app';
 import DFSWallet from '@/wallet';
-import { WalletType } from './utils/constant';
+import { WalletType } from 'dfssdk/dist/types';
 
 const appStore = useAppStore();
 const user = computed(() => appStore.user);

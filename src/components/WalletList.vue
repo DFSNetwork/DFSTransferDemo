@@ -13,7 +13,7 @@
 </template>
 
 <script setup lang="ts">
-import { WalletType } from '@/utils/constant';
+import { WalletType } from 'dfssdk/dist/types';
 
 const emit = defineEmits(['listenChoose']);
 const handleChoose = (walletType: WalletType) => {
