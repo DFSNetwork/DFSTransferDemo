@@ -1,0 +1,28 @@
+{
+  "name": "dfssdk",
+  "version": "1.0.0",
+  "description": "this is a test npm by typescript",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "keywords": [
+    "utils",
+    "dfs",
+    "dfssdk",
+    "dfswallet"
+  ],
+  "repository": {
+    "type": "git",
+    "url": ""
+  },
+  "scripts": {
+    "build": "npx tsc -p ."
+  },
+  "author": "dfssdk",
+  "license": "ISC",
+  "devDependencies": {
+    "typescript": "^5.4.5"
+  },
+  "dependencies": {
+    "eosjs": "^22.1.0"
+  }
+}

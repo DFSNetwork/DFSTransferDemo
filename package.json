@@ -9,6 +9,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "dfssdk": "^1.0.0",
     "eosjs": "^22.1.0",
     "pinia": "^2.1.7",
     "vant": "^4.8.10",
@@ -29,6 +30,7 @@
     "eslint-plugin-promise": "^6.1.1",
     "eslint-plugin-vue": "^9.24.0",
     "globals": "^15.0.0",
+    "rollup-plugin-node-polyfills": "^0.2.1",
     "sass": "^1.75.0",
     "scss": "^0.2.4",
     "typescript": "^5.4.4",

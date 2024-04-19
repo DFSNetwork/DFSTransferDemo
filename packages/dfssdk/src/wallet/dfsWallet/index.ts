@@ -1,6 +1,32 @@
-import useAppStore from "@/store/modules/app";
 import { Api, JsonRpc } from "eosjs";
-import { Transaction } from "eosjs/dist/eosjs-api-interfaces";
+import { SignatureProviderArgs, Transaction } from "eosjs/dist/eosjs-api-interfaces";
+import { JsSignatureProvider } from 'eosjs/dist/eosjs-jssig';
+import { Identity } from "../../types";
+import { PushTransactionArgs } from "eosjs/dist/eosjs-rpc-interfaces";
+
+const CHAINID = '000d9cae502dd1cc895745e204f83cc892bc4c450f92a03ecd4fe057709853cc';
+const RPCURL = 'https://api.dfs.land';
+const FREECPU = {
+  privateKey: '5JdBkvZva99uwBanXjGGhF4T7SrLpgTBipU76CD9QN4dFRPuD4N',
+  account: 'dfs.service',
+  authority: 'cpu',
+  contract: 'dfsfreecpu11',
+  actionName: 'freecpu',
+}
+function getFreeCpuApi(rpcUrl: string, freeCpuPrivateKey: string) {
+  const httpEndpoint = rpcUrl;
+  const private_keys = [freeCpuPrivateKey];
+  // dfs.service
+  const signatureProvider = new JsSignatureProvider(private_keys);
+  const rpc = new JsonRpc(httpEndpoint, { fetch });
+  const eos_client = new Api({
+    rpc,
+    signatureProvider,
+    textDecoder: new TextDecoder(),
+    textEncoder: new TextEncoder(),
+  });
+  return eos_client;
+}
 
 
 const win = (window as any);
@@ -18,7 +44,9 @@ export class DfsWallet {
   logoUrl: string = '';
   DFSWallet: any = null;
   api: Api | null = null;
-  chainId = '000d9cae502dd1cc895745e204f83cc892bc4c450f92a03ecd4fe057709853cc';
+  chainId = CHAINID;
+  rpcUrl = RPCURL;
+  freeCpuApi: Api | null = null;
 
   constructor() {
     this.connect().then((res) => {
@@ -26,7 +54,7 @@ export class DfsWallet {
     });
   }
 
-  async connect() {
+  async connect(): Promise<boolean> {
     return new Promise((resolve) => {
       if (provider != null) {
         this.DFSWallet = provider;
@@ -50,16 +78,17 @@ export class DfsWallet {
     }
   }
 
-  async init(appName: string, logoUrl: string) {
+  async init(appName: string, logoUrl: string, rpcUrl: string = RPCURL) {
     this.appName = appName;
     this.logoUrl = logoUrl;
-    const appStore = useAppStore();
+    this.rpcUrl = rpcUrl;
     const network = { chainId: this.chainId };
-    const rpc = new JsonRpc(appStore.rpcUrl, { fetch });
+    const rpc = new JsonRpc(this.rpcUrl, { fetch });
     await this.regIsConnect();
     this.api = this.DFSWallet?.dfs(network, Api, { rpc });
+    this.freeCpuApi = getFreeCpuApi(this.rpcUrl, FREECPU.privateKey);
   }
-  async login() {
+  async login(): Promise<Identity> {
     await this.regIsConnect();
     let id = await this.DFSWallet.login({
       chainId: this.chainId,
@@ -77,6 +106,12 @@ export class DfsWallet {
   }
   async logout() { }
   async transact(transaction: Transaction, opts: any = {}) {
+
+    if (opts.useFreeCpu) {
+      delete opts.useFreeCpu;
+      return await this.transactByFreeCpu(transaction, opts);
+    }
+
     try {
       let resp = await this.api?.transact(
         transaction,
@@ -89,6 +124,69 @@ export class DfsWallet {
         )
       );
       return resp;
+    } catch (error) {
+      const eMsg = this.dealError(error);
+      throw eMsg;
+    }
+  }
+  async transactByFreeCpu(transaction: Transaction, opts: any = {}) {
+    const accAuth = transaction.actions[0].authorization[0];
+    transaction.actions.unshift({
+      account: FREECPU.contract,
+      name: FREECPU.actionName,
+      authorization: [
+        {
+          actor: FREECPU.account,
+          permission: FREECPU.authority,
+        },
+        accAuth,
+      ],
+      data: {
+        user: accAuth.actor,
+      },
+    });
+    try {
+      // 当前账户签名
+      let _PushTransactionArgs = await this.api?.transact(
+        transaction,
+        {
+          blocksBehind: 3,
+          expireSeconds: 3600,
+          ...opts,
+          sign: false,
+          broadcast: false,
+        }
+      ) as PushTransactionArgs;
+      const availableKeys = await this.api?.signatureProvider.getAvailableKeys();
+      const serializedTx = _PushTransactionArgs?.serializedTransaction;
+      const signArgs = {
+        chainId: this.chainId,
+        requiredKeys: availableKeys,
+        serializedTransaction: serializedTx,
+        abis: [],
+      } as SignatureProviderArgs;
+      let pushTransactionArgs = await this.api?.signatureProvider.sign(signArgs);
+
+      // 免CPU签名
+      const freeCpuRequiredKeys =
+        await this.freeCpuApi?.signatureProvider.getAvailableKeys();
+      const signArgsFreeCpu = {
+        chainId: this.chainId,
+        requiredKeys: freeCpuRequiredKeys,
+        serializedTransaction: serializedTx,
+        abis: [],
+      };
+      let pushTransactionArgsFreeCpu = await this.freeCpuApi?.signatureProvider.sign(
+        signArgsFreeCpu as SignatureProviderArgs
+      );
+      pushTransactionArgs?.signatures.unshift(
+        pushTransactionArgsFreeCpu?.signatures[0] as string
+      );
+      // 将操作广播出去
+      let push_result = await this.api?.pushSignedTransaction(
+        pushTransactionArgs as PushTransactionArgs
+      );
+      return push_result;
     } catch (error) {
       const eMsg = this.dealError(error);
       throw eMsg;

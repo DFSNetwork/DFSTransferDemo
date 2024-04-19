@@ -49,14 +49,17 @@ const handleChoose = (walletType: WalletType) => {
 };
 const handleLogin = async (walletType: WalletType) => {
   try {
+    localStorage.setItem('walletType', walletType);
     await DFSWallet.init(walletType);
-    await DFSWallet.login();
+    const userInfo = await DFSWallet.login();
+    appStore.setUser(userInfo);
   } catch (error) {
     console.error(error);
   }
 };
 const handleLogout = () => {
   DFSWallet.logout();
+  appStore.setUser(null);
 };
 </script>
 

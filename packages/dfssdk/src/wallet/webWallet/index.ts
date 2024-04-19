@@ -1,5 +1,6 @@
-import { Identity } from "@/types";
+
 import { Transaction } from "eosjs/dist/eosjs-api-interfaces";
+import { Identity } from "../../types";
 
 class Deferred {
   promise: Promise<any>
@@ -19,7 +20,7 @@ let _childWindow: Window | null = null;
 let linkUrl = 'https://dfs.land';
 // linkUrl = 'https://localhost:5173';
 
-export class WebSdk {
+export class WebWallet {
   curUserInfo: Identity | null = null;
   deferredTransact: {
     deferral: Deferred
@@ -90,7 +91,7 @@ export class WebSdk {
     }
   }
 
-  async login() {
+  async login(): Promise<Identity | null> {
     if (this.deferredTransact) {
       this.closeWindow(true)
       this.deferredTransact.deferral.reject('Trying to login')
@@ -109,7 +110,7 @@ export class WebSdk {
       throw e
     }
   }
-  logout() {
+  async logout() {
     this.curUserInfo = null;
   }
 
@@ -210,5 +211,5 @@ export class WebSdk {
     return window.open(url, '_blank', OPEN_SETTINGS);
   }
 }
-const webSdk = new WebSdk()
-export default webSdk
+const webWallet = new WebWallet()
+export default webWallet
