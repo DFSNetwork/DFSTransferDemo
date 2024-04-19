@@ -19,13 +19,13 @@ yarn add dfssdk
 
 ## Usage
 
-```
-import Wallet from "dfssdk";
+```js
+import Wallet from 'dfssdk';
 
 const DFSWallet = new Wallet({
   appName: 'DFS Tansfer Demo',
   logo: 'https://dfs.land/assets/icons/180x180.png',
-  rpcUrl: 'https://api.dfs.land'
+  rpcUrl: 'https://api.dfs.land',
 });
 
 const login = async (walletType: WalletType) => {
@@ -36,8 +36,8 @@ const login = async (walletType: WalletType) => {
 const logout = async () => {
   DFSWallet.logout();
   // ...
-  userInfo.value = null
-}
+  userInfo.value = null;
+};
 
 const transact = async () => {
   const transaction: Transaction = {
@@ -71,6 +71,5 @@ const transact = async () => {
       error instanceof Error ? error.message : JSON.stringify(error)
     );
   }
-}
-
+};
 ```
