@@ -1,9 +1,76 @@
-# Vue 3 + TypeScript + Vite
+# DFS Wallet Demo
 
-This template should help get you started developing with Vue 3 and TypeScript in Vite. The template uses Vue 3 `<script setup>` SFCs, check out the [script setup docs](https://v3.vuejs.org/api/sfc-script-setup.html#sfc-script-setup) to learn more.
+This dapp demonstrates how a dapp can log in through the dfs plug-in wallet or passkey, and how to interact with the dfs blockchain.
+该 dapp 演示了一个 dapp 如何通过 dfs 插件钱包或 passkey 的方式登录，以及如何与 dfs 区块链进行交互。
 
-## Recommended Setup
+## Installation
 
-- [VS Code](https://code.visualstudio.com/) + [Vue - Official](https://marketplace.visualstudio.com/items?itemName=Vue.volar) (previously Volar) and disable Vetur
+### npm
 
-- Use [vue-tsc](https://github.com/vuejs/language-tools/tree/master/packages/tsc) for performing the same type checking from the command line, or for generating d.ts files for SFCs.
+```
+npm i dfssdk
+```
+
+### yarn
+
+```
+yarn add dfssdk
+```
+
+## Usage
+
+```
+import Wallet from "dfssdk";
+
+const DFSWallet = new Wallet({
+  appName: 'DFS Tansfer Demo',
+  logo: 'https://dfs.land/assets/icons/180x180.png',
+  rpcUrl: 'https://api.dfs.land'
+});
+
+const login = async (walletType: WalletType) => {
+  await DFSWallet.init(walletType);
+  userInfo.value = await DFSWallet.login();
+};
+
+const logout = async () => {
+  DFSWallet.logout();
+  // ...
+  userInfo.value = null
+}
+
+const transact = async () => {
+  const transaction: Transaction = {
+    actions: [
+      {
+        account: 'eosio.token',
+        name: 'transfer',
+        authorization: [
+          {
+            actor: userInfo.value?.name || '',
+            permission: userInfo.value?.authority || 'active',
+          },
+        ],
+        data: {
+          from: userInfo.value?.name,
+          to: 'testusera114',
+          quantity: '0.00000001 DFS',
+          memo: 'test dfssdk transfer',
+        },
+      },
+    ],
+  };
+
+  try {
+    const userinfo = await DFSWallet.transact(transaction, {
+      useFreeCpu: true,
+    });
+    showSuccessToast('transfer success!');
+  } catch (error) {
+    showFailToast(
+      error instanceof Error ? error.message : JSON.stringify(error)
+    );
+  }
+}
+
+```
