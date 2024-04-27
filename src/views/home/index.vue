@@ -104,7 +104,7 @@ import { Action } from 'eosjs/dist/eosjs-serialize';
 import { Transaction } from 'eosjs/dist/eosjs-api-interfaces';
 
 const handleToGithub = () => {
-  window.open('https://github.com/DFSNetwork/DFS-Wallet-Demo', '_blank');
+  window.open('https://github.com/DFSNetwork/DFSTransferDemo', '_blank');
 };
 
 const formData = reactive({
