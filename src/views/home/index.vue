@@ -13,6 +13,7 @@
     </div>
 
     <div class="transfer">
+      <div class="title">Transfer</div>
       <div class="item">
         <div class="label">From</div>
         <div class="iptDiv">
@@ -81,6 +82,8 @@
       >
     </div>
 
+    <Sign />
+
     <van-popup class="popup" v-model:show="showTokens" closeable round>
       <Tokens @change="handleChangeToken" @close="handleClose" />
     </van-popup>
@@ -90,6 +93,7 @@
 <script setup lang="ts">
 import Navs from '@/components/Navs.vue';
 import Tokens from '@/views/home/popup/Tokens.vue';
+import Sign from './comp/Sign.vue';
 import useAppStore from '@/store/modules/app';
 import { Identity, Token } from '@/types';
 import DFSWallet from '@/wallet';
@@ -322,6 +326,14 @@ const handleRegAccount = async () => {
   margin: auto;
   margin-top: 50px;
   color: #fff;
+  border: 1px solid #666;
+  padding: 20px;
+  border-radius: 10px;
+  .title {
+    font-size: 18px;
+    text-align: center;
+    font-weight: 600;
+  }
 }
 .item {
   .label {

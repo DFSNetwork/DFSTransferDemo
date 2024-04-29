@@ -193,6 +193,14 @@ export class DfsWallet {
     }
   }
 
+  async sign(data: string = '') {
+    if (!this.DFSWallet || !this.api) {
+      throw new Error('Wallet not init');
+    }
+    const availableKeys = await this.api?.signatureProvider.getAvailableKeys() as string[];
+    return await this.DFSWallet.getArbitrarySignature(availableKeys[0], data)
+  }
+
   dealError(e: any) {
     let back = {
       code: 999,

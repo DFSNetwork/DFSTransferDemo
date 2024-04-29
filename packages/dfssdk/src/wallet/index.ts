@@ -48,12 +48,18 @@ class Wallet {
       await this.webSdk?.logout();
     }
   }
-  transact(transaction: Transaction | Action[], options: any = {}) {
+  async transact(transaction: Transaction | Action[], options: any = {}) {
     if (!this.webSdk) {
       throw new Error('Wallet not init');
     }
     let _t: Transaction = Array.isArray(transaction) ? { actions: transaction } : transaction;
-    return this.webSdk.transact(_t, options);
+    return await this.webSdk.transact(_t, options);
+  }
+  async sign(data: string = '') {
+    if (!this.webSdk) {
+      throw new Error('Wallet not init');
+    }
+    return await this.webSdk.sign(data);
   }
 }
 

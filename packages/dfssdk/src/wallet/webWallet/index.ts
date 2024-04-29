@@ -62,6 +62,8 @@ export class WebWallet {
         case 'transact':
           this.dealTransferMsg(msgData);
           break;
+        case 'sign':
+          this.dealSignMsg(msgData);
       }
     } catch (error) {
       console.log(error);
@@ -153,6 +155,59 @@ export class WebWallet {
     try {
       const result = await this.deferredTransact.deferral.promise
       this.deferredTransact = null;
+      this.closeWindow(true);
+      return result
+    } catch (e) {
+      console.error(e)
+      throw e
+    }
+  }
+
+  dealSignMsg(msgData: any) {
+    const { status, message } = msgData;
+    if (status === 'error') {
+      this.deferredTransact!.deferral.reject(message);
+      this.deferredTransact = null;
+      this.closeWindow(true);
+      return;
+    }
+    if (status === 'ready') {
+      this.sendMsg({
+        type: 'sign',
+        data: {
+          data: this.deferredTransact!.options.data
+        },
+      })
+      return
+    }
+    if (status === 'success') {
+      this.deferredTransact?.deferral.resolve(msgData.data);
+    }
+  }
+
+  async sign(data: string = '') {
+    if (this.deferredLogin) {
+      this.closeWindow(true)
+      this.deferredLogin.reject('Trying to sign')
+      this.deferredLogin = null
+    }
+    if (this.deferredTransact) {
+      this.closeWindow(true)
+      this.deferredTransact.deferral.reject('Trying to sign')
+      this.deferredTransact = null
+    }
+    this.childWindow = this.openWindow(`${linkUrl}/dappAuth/sign`);
+    this.deferredTransact = {
+      deferral: new Deferred(),
+      transaction: { actions: [] },
+      options: {
+        data: data
+      }
+    };
+    try {
+      const result = await this.deferredTransact.deferral.promise
+      this.deferredTransact = null;
+      console.log(result)
       this.closeWindow(true);
       return result
     } catch (e) {

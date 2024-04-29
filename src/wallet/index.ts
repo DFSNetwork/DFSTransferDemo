@@ -1,6 +1,7 @@
 
 
 import Wallet from "dfssdk";
+// import Wallet from "../../packages/dfssdk/src/index";
 
 const DFSWallet = new Wallet({
   appName: 'DFS Tansfer Demo',
