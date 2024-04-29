@@ -71,4 +71,13 @@ const transact = async () => {
     );
   }
 };
+
+const handleSign = async (signText: string) => {
+  try {
+    const res = await DFSWallet.sign(signText);
+    console.log(res);
+  } catch (error) {
+    console.log(error);
+  }
+};
 ```
