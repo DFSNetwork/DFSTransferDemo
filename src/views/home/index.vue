@@ -104,7 +104,6 @@ import {
   getCurrencBalance,
   getTableRows,
 } from '@/utils/common';
-import { Action } from 'eosjs/dist/eosjs-serialize';
 import { Transaction } from 'eosjs/dist/eosjs-api-interfaces';
 
 const handleToGithub = () => {
