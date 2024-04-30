@@ -82,7 +82,7 @@
       >
     </div>
 
-    <Sign />
+    <!-- <Sign /> -->
 
     <van-popup class="popup" v-model:show="showTokens" closeable round>
       <Tokens @change="handleChangeToken" @close="handleClose" />
@@ -93,7 +93,7 @@
 <script setup lang="ts">
 import Navs from '@/components/Navs.vue';
 import Tokens from '@/views/home/popup/Tokens.vue';
-import Sign from './comp/Sign.vue';
+// import Sign from './comp/Sign.vue';
 import useAppStore from '@/store/modules/app';
 import { Identity, Token } from '@/types';
 import DFSWallet from '@/wallet';
