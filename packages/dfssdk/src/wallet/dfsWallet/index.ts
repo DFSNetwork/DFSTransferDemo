@@ -1,10 +1,14 @@
-import { Api, JsonRpc } from "eosjs";
-import { SignatureProviderArgs, Transaction } from "eosjs/dist/eosjs-api-interfaces";
+import { Api, JsonRpc } from 'eosjs';
+import {
+  SignatureProviderArgs,
+  Transaction,
+} from 'eosjs/dist/eosjs-api-interfaces';
 import { JsSignatureProvider } from 'eosjs/dist/eosjs-jssig';
-import { Identity } from "../../types";
-import { PushTransactionArgs } from "eosjs/dist/eosjs-rpc-interfaces";
+import { Identity } from '../../types';
+import { PushTransactionArgs } from 'eosjs/dist/eosjs-rpc-interfaces';
 
-const CHAINID = '000d9cae502dd1cc895745e204f83cc892bc4c450f92a03ecd4fe057709853cc';
+const CHAINID =
+  '000d9cae502dd1cc895745e204f83cc892bc4c450f92a03ecd4fe057709853cc';
 const RPCURL = 'https://api.dfs.land';
 const FREECPU = {
   privateKey: '5JdBkvZva99uwBanXjGGhF4T7SrLpgTBipU76CD9QN4dFRPuD4N',
@@ -12,7 +16,7 @@ const FREECPU = {
   authority: 'cpu',
   contract: 'dfsfreecpu11',
   actionName: 'freecpu',
-}
+};
 function getFreeCpuApi(rpcUrl: string, freeCpuPrivateKey: string) {
   const httpEndpoint = rpcUrl;
   const private_keys = [freeCpuPrivateKey];
@@ -28,14 +32,16 @@ function getFreeCpuApi(rpcUrl: string, freeCpuPrivateKey: string) {
   return eos_client;
 }
 
-
-const win = (window as any);
+const win = window as any;
 let provider: any = win.dfswallet || null;
 const dfsLoaded = () => {
   if (provider != null) {
     return;
   }
   provider = win.dfswallet;
+  if (!dfsWallet.api) {
+    dfsWallet.init(dfsWallet.appName, dfsWallet.logoUrl, dfsWallet.rpcUrl);
+  }
 };
 document.addEventListener('dfsWalletLoaded', dfsLoaded);
 export class DfsWallet {
@@ -92,7 +98,7 @@ export class DfsWallet {
     await this.regIsConnect();
     let id = await this.DFSWallet.login({
       chainId: this.chainId,
-      newLogin: true
+      newLogin: true,
     });
     if (!id) {
       throw new Error('user rejects');
@@ -101,12 +107,11 @@ export class DfsWallet {
       channel: 'dfswallet',
       authority: id.accounts[0].authority,
       name: id.accounts[0].name,
-      publicKey: id.accounts[0].publicKey
+      publicKey: id.accounts[0].publicKey,
     };
   }
-  async logout() { }
+  async logout() {}
   async transact(transaction: Transaction, opts: any = {}) {
-
     if (opts.useFreeCpu) {
       delete opts.useFreeCpu;
       return await this.transactByFreeCpu(transaction, opts);
@@ -147,17 +152,15 @@ export class DfsWallet {
     });
     try {
       // 当前账户签名
-      let _PushTransactionArgs = await this.api?.transact(
-        transaction,
-        {
-          blocksBehind: 3,
-          expireSeconds: 3600,
-          ...opts,
-          sign: false,
-          broadcast: false,
-        }
-      ) as PushTransactionArgs;
-      const availableKeys = await this.api?.signatureProvider.getAvailableKeys();
+      let _PushTransactionArgs = (await this.api?.transact(transaction, {
+        blocksBehind: 3,
+        expireSeconds: 3600,
+        ...opts,
+        sign: false,
+        broadcast: false,
+      })) as PushTransactionArgs;
+      const availableKeys =
+        await this.api?.signatureProvider.getAvailableKeys();
       const serializedTx = _PushTransactionArgs?.serializedTransaction;
       const signArgs = {
         chainId: this.chainId,
@@ -165,7 +168,9 @@ export class DfsWallet {
         serializedTransaction: serializedTx,
         abis: [],
       } as SignatureProviderArgs;
-      let pushTransactionArgs = await this.api?.signatureProvider.sign(signArgs);
+      let pushTransactionArgs = await this.api?.signatureProvider.sign(
+        signArgs
+      );
 
       // 免CPU签名
       const freeCpuRequiredKeys =
@@ -176,9 +181,10 @@ export class DfsWallet {
         serializedTransaction: serializedTx,
         abis: [],
       };
-      let pushTransactionArgsFreeCpu = await this.freeCpuApi?.signatureProvider.sign(
-        signArgsFreeCpu as SignatureProviderArgs
-      );
+      let pushTransactionArgsFreeCpu =
+        await this.freeCpuApi?.signatureProvider.sign(
+          signArgsFreeCpu as SignatureProviderArgs
+        );
       pushTransactionArgs?.signatures.unshift(
         pushTransactionArgsFreeCpu?.signatures[0] as string
       );
@@ -197,8 +203,9 @@ export class DfsWallet {
     if (!this.DFSWallet || !this.api) {
       throw new Error('Wallet not init');
     }
-    const availableKeys = await this.api?.signatureProvider.getAvailableKeys() as string[];
-    return await this.DFSWallet.getArbitrarySignature(availableKeys[0], data)
+    const availableKeys =
+      (await this.api?.signatureProvider.getAvailableKeys()) as string[];
+    return await this.DFSWallet.getArbitrarySignature(availableKeys[0], data);
   }
 
   dealError(e: any) {

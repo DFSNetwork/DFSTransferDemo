@@ -9,7 +9,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "dfssdk": "^1.0.3",
+    "dfssdk": "^1.0.4",
     "eosjs": "^22.1.0",
     "pinia": "^2.1.7",
     "vant": "^4.8.10",

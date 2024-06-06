@@ -1,8 +1,9 @@
-import webSdk, { WebWallet } from "./webWallet";
-import dfsWallet, { DfsWallet } from "./dfsWallet";
+import webSdk, { WebWallet } from './webWallet';
+import dfsWallet, { DfsWallet } from './dfsWallet';
 import { Transaction } from 'eosjs/dist/eosjs-api-interfaces';
 import { Action } from 'eosjs/dist/eosjs-serialize';
-import { Identity, WalletType } from "../types";
+import { Identity, WalletType } from '../types';
+import './dfsApp';
 
 class Wallet {
   webSdk: WebWallet | DfsWallet | null = null;
@@ -31,7 +32,7 @@ class Wallet {
     if (walletType === WalletType.WEB) {
       webSdk.init(this.appName, this.logo);
       this.webSdk = webSdk;
-      return
+      return;
     }
     this.webSdk = dfsWallet;
     await dfsWallet.init(this.appName, this.logo);
@@ -52,7 +53,9 @@ class Wallet {
     if (!this.webSdk) {
       throw new Error('Wallet not init');
     }
-    let _t: Transaction = Array.isArray(transaction) ? { actions: transaction } : transaction;
+    let _t: Transaction = Array.isArray(transaction)
+      ? { actions: transaction }
+      : transaction;
     return await this.webSdk.transact(_t, options);
   }
   async sign(data: string = '') {
