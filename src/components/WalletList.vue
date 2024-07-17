@@ -9,11 +9,25 @@
       <img src="@/assets/img/DFS.png" class="icon" />
       <div class="label">DFS Wallet</div>
     </div>
+    <div
+      class="item"
+      v-if="isTgApp"
+      @click="handleChoose(WalletType.TELEGRAMAPP)"
+    >
+      <img src="@/assets/img/DFS.png" class="icon" />
+      <div class="label">Telegram App</div>
+    </div>
   </div>
 </template>
 
 <script setup lang="ts">
+// import { WalletType } from '@/utils/constant';
 import { WalletType } from 'dfssdk/dist/types';
+
+const isTgApp = computed(() => {
+  const Telegram = (window as any).Telegram;
+  return Telegram?.WebApp?.platform && Telegram?.WebApp?.platform !== 'unknown';
+});
 
 const emit = defineEmits(['listenChoose']);
 const handleChoose = (walletType: WalletType) => {

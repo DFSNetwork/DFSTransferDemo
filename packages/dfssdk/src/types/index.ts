@@ -1,9 +1,9 @@
-import { Api } from 'eosjs';
 import { Transaction } from 'eosjs/dist/eosjs-api-interfaces';
 
 export enum WalletType {
   WEB = 'webSdk',
   DFSWALLET = 'dfsWallet',
+  TELEGRAMAPP = 'telegramApp',
 }
 export interface Identity {
   channel: string;
@@ -30,4 +30,20 @@ export interface Token {
 export interface AppMsg {
   type: string;
   data?: Object;
+}
+export interface AppInfo {
+  appName: string;
+  logoUrl: string;
+  origin: string;
+}
+
+export enum TGMsgType {
+  LOGIN = 'login',
+  TRANSACT = 'transact',
+  // SIGN = 'sign',
+}
+export interface TgMsg {
+  type: TGMsgType;
+  appInfo: AppInfo;
+  transaction?: Transaction;
 }

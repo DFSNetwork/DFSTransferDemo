@@ -1,12 +1,13 @@
 import webSdk, { WebWallet } from './webWallet';
 import dfsWallet, { DfsWallet } from './dfsWallet';
+import tGWallet, { TGWallet } from './telegramApp';
 import { Transaction } from 'eosjs/dist/eosjs-api-interfaces';
 import { Action } from 'eosjs/dist/eosjs-serialize';
 import { Identity, WalletType } from '../types';
 import './dfsApp';
 
 class Wallet {
-  webSdk: WebWallet | DfsWallet | null = null;
+  webSdk: WebWallet | DfsWallet | TGWallet | null = null;
   appName: string = '';
   logo: string = '';
   rpcUrl: string = '';
@@ -29,9 +30,15 @@ class Wallet {
     this.logo = logo;
   }
   async init(walletType: WalletType) {
+    console.log(walletType);
     if (walletType === WalletType.WEB) {
       webSdk.init(this.appName, this.logo);
       this.webSdk = webSdk;
+      return;
+    }
+    if (walletType === WalletType.TELEGRAMAPP) {
+      tGWallet.init(this.appName, this.logo);
+      this.webSdk = tGWallet;
       return;
     }
     this.webSdk = dfsWallet;

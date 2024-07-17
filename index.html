@@ -14,6 +14,19 @@
   <link rel="icon" type="image/svg+xml" href="/vite.svg" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>DFS Transfer Demo</title>
+  <script src="/static/telegram.js"></script>
+  <script>
+    // Init TWA
+    Telegram.WebApp.ready();
+    Telegram.WebApp.expand();
+    Telegram.WebApp.BackButton.show();
+    Telegram.WebApp.onEvent('backButtonClicked', () => {
+      window.history.back();
+    });
+    setTimeout(() => {
+      console.error('Telegram ========= ', Telegram)
+    }, 100);
+  </script>
 </head>
 
 <body>
